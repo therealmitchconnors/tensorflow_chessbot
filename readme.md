@@ -1,8 +1,8 @@
-TensorFlow Chessbot - /u/ChessFenBot [◕ _ ◕]<sup>\* *I make FENs*</sup>
+TensorFlow Chessbot - [/u/ChessFenBot](https://www.reddit.com/user/ChessFenBot) [◕ _ ◕]<sup>\* *I make FENs*</sup>
 ---
 
 **TL;DR**: 
-> Turn http://i.imgur.com/HnWYt8A.png → [1nkr4/1p3q1p/pP4pn/P1r5/3N1p2/2b2B1P/5PPB/2RQ1RK1](http://www.lichess.org/analysis/1nkr4/1p3q1p/pP4pn/P1r5/3N1p2/2b2B1P/5PPB/2RQ1RK1_w)
+> Turn http://i.imgur.com/HnWYt8A.png → [1nkr4/1p3q1p/pP4pn/P1r5/3N1p2/2b2B1P/5PPB/2RQ1RK1](https://lichess.org/analysis/1nkr4/1p3q1p/pP4pn/P1r5/3N1p2/2b2B1P/5PPB/2RQ1RK1_w)
 
 ![Prediction](readme_images/prediction.png)
 
@@ -24,11 +24,9 @@ On a linux machine which has Tensorflow and SciPy installed
 
         sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython-notebook python-pandas python-sympy python-nose
 
-Download and unzip this directory somewhere : [tensorflow_chessbot](https://github.com/Elucidation/tensorflow_chessbot/archive/master.zip)
+Download the chessfenbot branch somewhere : [tensorflow_chessbot/chessfenbot](https://github.com/Elucidation/tensorflow_chessbot/archive/chessfenbot.zip) 
 
-Then, download and unzip this saved model to the same directory  : [tensorflow_chessbot_model_v01.zip](https://drive.google.com/open?id=0BwW6qsUNa47xeUNvQ2M0a053Y0U)
-
-The directory structure should look like `<SOMEWHERE>\tensorflow_chessbot-master\saved_models`
+*Alternatively clone the [chessfenbot branch](https://github.com/Elucidation/tensorflow_chessbot/tree/chessfenbot)*
 
 Now, to run pass the following arguments to `tensorflow_chessbot.py`
 
@@ -66,9 +64,11 @@ Similarly, a URL can be tested by calling with a URL:
 
 ### Reddit Bot
 
+*Code lives on the [chessfenbot branch](https://github.com/Elucidation/tensorflow_chessbot/tree/chessfenbot)*
+
 [/u/ChessFenBot](https://www.reddit.com/user/ChessFenBot) will automatically reply to [reddit /r/chess](https://www.reddit.com/r/) new topic image posts that contain detectable online chessboard screenshots. A screenshot either ends in `.png`, `.jpg`, `.gif`, or is an `imgur` link. 
 
-It replies with a [lichess](http://www.lichess.org) analysis link for that layout and a predicted [FEN](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation).
+It replies with a [lichess](https://lichess.org) analysis link for that layout and a predicted [FEN](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation).
 
 ```py
 predictor = ChessboardPredictor()
@@ -95,11 +95,11 @@ ChessFenBot automatically replied to [this reddit post](https://www.reddit.com/r
 > 
 > FEN: [1nkr4/1p3q1p/pP4pn/P1r5/3N1p2/2b2B1P/5PPB/2RQ1RK1](http://www.fen-to-image.com/image/30/1nkr1111/1p111q1p/pP1111pn/P1r11111/111N1p11/11b11B1P/11111PPB/11RQ1RK1.png)
 > 
-> Here is a link to a [Lichess Analysis](http://www.lichess.org/analysis/1nkr4/1p3q1p/pP4pn/P1r5/3N1p2/2b2B1P/5PPB/2RQ1RK1_w) - White to play
+> Here is a link to a [Lichess Analysis](https://lichess.org/analysis/1nkr4/1p3q1p/pP4pn/P1r5/3N1p2/2b2B1P/5PPB/2RQ1RK1_w) - White to play
 > 
 > ---
 > 
-> <sup>Yes I am a machine learning bot | [`How I work`](https://github.com/Elucidation/tensorflow_chessbot 'Must go deeper') | Reply with a corrected FEN or [Editor link)](http://www.lichess.org/editor/r1b1r1k1/5pp1/p1pR1nNp/8/2B5/2q5/P1P1Q1PP/5R1K) to add to my next training dataset</sup>
+> <sup>Yes I am a machine learning bot | [`How I work`](https://github.com/Elucidation/tensorflow_chessbot 'Must go deeper') | Reply with a corrected FEN or [Editor link)](https://lichess.org/editor/r1b1r1k1/5pp1/p1pR1nNp/8/2B5/2q5/P1P1Q1PP/5R1K) to add to my next training dataset</sup>
 
 ## Workflow
 
