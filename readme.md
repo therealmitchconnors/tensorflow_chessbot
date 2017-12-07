@@ -85,10 +85,10 @@ To consume the service from python (prerequisite: `pip install tensorflow-servin
     from tensorflow_serving.apis import predict_pb2
 
     import grpc
-    channel = grpc.insecure_channel('localhost:9000')
+    channel = grpc.insecure_channel('localhost:8500')
     stub = prediction_service_pb2.PredictionServiceStub(channel)
     request = predict_pb2.PredictRequest()
-    request.model_spec.name = 'mnist'
+    request.model_spec.name = 'chessbot'
     import helper_functions
     import numpy as np
     img = helper_functions.loadImageURL('https://i.redd.it/nn19vktdi4101.png')
