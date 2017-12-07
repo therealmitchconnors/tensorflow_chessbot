@@ -61,6 +61,42 @@ Which should output something like:
 Similarly, a URL can be tested by calling with a URL:
 
     $ ./tensorflow_chessbot.py --url http://imgur.com/u4zF5Hj.png
+### Tensorflow_serving
+
+The prediction model can now be saved as a SavedModel, and run as a grpc service for use from multiple languages.
+
+To create a saved model file:
+
+    python
+    import tensorflow_chessbot
+    p = tensorflow_chessbot.ChessboardPredictor()
+    p.makePrediction('https://i.redd.it/nn19vktdi4101.png')
+    p.saveModel('./savedmodel/2/', False)
+
+Note that the tensorflow model server will expect a path to the model, and will treat each subfolder as a version of that model.  In this example, we have exported version 2 of the model to the savedmodel folder, and will provide the full path of savedmodel to the server.
+
+To run the model as a service: 
+     tensorflow_model_server --port=[8500 is default] --model_name=chessbot --model_base_path=[full path to model, without version]
+
+To consume the service from python (prerequisite: `pip install tensorflow-serving-api`):
+    from tensorflow_serving.apis import prediction_service_pb2
+    from tensorflow_serving.apis import predict_pb2
+
+    import grpc
+    channel = grpc.insecure_channel('localhost:9000')
+    stub = prediction_service_pb2.PredictionServiceStub(channel)
+    request = predict_pb2.PredictRequest()
+    request.model_spec.name = 'mnist'
+    import helper_functions
+    import numpy as np
+    img = helper_functions.loadImageURL('https://i.redd.it/nn19vktdi4101.png')
+    import tensorflow_chessbot
+    img_arr = np.asarray(img.convert("L"), dtype=np.float32)
+    tiles = tensorflow_chessbot.getTiles(img_arr)
+    request.inputs['inputs'].CopyFrom(tf.contrib.util.make_tensor_proto(tiles, shape=[64, 1024]))
+    response =  stub.Predict(request)
+    response.outputs["classes] # array of 64 characters, representing uncompressed FEN
+    response.scores["scores"] ## array of 64x13 floats, indicating probability of each outcome per tile
 
 ### Reddit Bot
 

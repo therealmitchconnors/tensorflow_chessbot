@@ -439,22 +439,6 @@ class ChessboardPredictor(object):
 
     self.y_conv = tf.nn.softmax(tf.matmul(h_fc1_drop, W_fc2) + b_fc2, name='Ypredict')
 
-    # # Old single layer regression classifier
-    # W = tf.Variable(tf.zeros([32*32, 13]))
-    # b = tf.Variable(tf.zeros([13]))
-    # y = tf.nn.softmax(tf.matmul(x, W) + b)
-
-    # Ground truth labels if exist 
-    y_ = tf.placeholder(tf.float32, [None, 13], name='Ytruth')
-
-    cross_entropy = -tf.reduce_sum(y_*tf.log(self.y_conv), name='CrossEntropy')
-
-    # train_step = tf.train.GradientDescentOptimizer(0.001).minimize(cross_entropy)
-    train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
-
-    correct_prediction = tf.equal(tf.argmax(self.y_conv,1), tf.argmax(y_,1), name='CorrectPrediction')
-    accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"), name='Accuracy')
-
     # Add ops to save and restore all the variables.
     saver = tf.train.Saver()
 
@@ -465,6 +449,49 @@ class ChessboardPredictor(object):
     print("Loading model '%s'" % model_path)
     saver.restore(self.sess, model_path)
     print("Model restored.")
+
+  def saveModel(self,path,asText):
+    """Freezes the model for use in other languages, and as a service (must call getPrediction first)"""
+    # some variables are left un-initialized after the getTiles function is called
+    self.sess.run(tf.global_variables_initializer())
+    piece_type = tf.constant(list(' KQRBNPkqrbnp'))
+    table = tf.contrib.lookup.index_to_string_table_from_tensor(piece_type)
+    classes = table.lookup(tf.to_int64(self.guessed))
+
+    classify_inputs_tensor_info = tf.saved_model.utils.build_tensor_info(
+        self.x)
+    classes_output_tensor_info = tf.saved_model.utils.build_tensor_info(
+        classes)
+    scores_output_tensor_info = tf.saved_model.utils.build_tensor_info(tf.convert_to_tensor(self.guess_prob, name='guess_prob_output'))
+
+    classification_signature = (
+        tf.saved_model.signature_def_utils.build_signature_def(
+            inputs={
+                tf.saved_model.signature_constants.CLASSIFY_INPUTS:
+                    classify_inputs_tensor_info
+            },
+            outputs={
+                tf.saved_model.signature_constants.CLASSIFY_OUTPUT_CLASSES:
+                    classes_output_tensor_info,
+                tf.saved_model.signature_constants.CLASSIFY_OUTPUT_SCORES:
+                    scores_output_tensor_info
+            },
+            method_name=tf.saved_model.signature_constants.
+            CLASSIFY_METHOD_NAME))
+
+    legacy_init_op = tf.group(
+        tf.tables_initializer(), name='legacy_init_op')
+    builder = tf.saved_model.builder.SavedModelBuilder(path)
+    builder.add_meta_graph_and_variables(
+        self.sess, [tf.saved_model.tag_constants.SERVING],
+        signature_def_map={
+            tf.saved_model.signature_constants.
+            DEFAULT_SERVING_SIGNATURE_DEF_KEY:
+                classification_signature,
+        },
+        legacy_init_op=legacy_init_op)
+    builder.save(asText)
+
 
   def getPrediction(self,img):
     """Run trained neural network on tiles generated from image"""
@@ -482,15 +509,15 @@ class ChessboardPredictor(object):
     validation_set = np.swapaxes(np.reshape(tiles, [32*32, 64]),0,1)
 
     # Run neural network on data
-    guess_prob, guessed = self.sess.run([self.y_conv, tf.argmax(self.y_conv,1)], feed_dict={self.x: validation_set, self.keep_prob: 1.0})
+    self.guess_prob, self.guessed = self.sess.run([self.y_conv, tf.argmax(self.y_conv,1)], feed_dict={self.x: validation_set, self.keep_prob: 1.0})
     
     # Prediction bounds
-    a = np.array(map(lambda x: x[0][x[1]], zip(guess_prob, guessed)))
+    a = np.array(list(map(lambda x: x[0][x[1]], zip(self.guess_prob, self.guessed))))
     print("Certainty range [%g - %g], Avg: %g, Overall: %g" % (a.min(), a.max(), a.mean(), a.prod()))
     
     # Convert guess into FEN string
     # guessed is tiles A1-H8 rank-order, so to make a FEN we just need to flip the files from 1-8 to 8-1
-    pieceNames = map(lambda k: '1' if k == 0 else helper_functions.labelIndex2Name(k), guessed) # exchange ' ' for '1' for FEN
+    pieceNames = list(map(lambda k: '1' if k == 0 else helper_functions.labelIndex2Name(k), self.guessed)) # exchange ' ' for '1' for FEN
     fen = '/'.join([''.join(pieceNames[i*8:(i+1)*8]) for i in reversed(range(8))])
     return fen, a.prod()
 
