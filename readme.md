@@ -76,9 +76,10 @@ To create a saved model file:
 Note that the tensorflow model server will expect a path to the model, and will treat each subfolder as a version of that model.  In this example, we have exported version 2 of the model to the savedmodel folder, and will provide the full path of savedmodel to the server.
 
 To run the model as a service: 
-     tensorflow_model_server --port=[8500 is default] --model_name=chessbot --model_base_path=[full path to model, without version]
+    tensorflow_model_server --port=[8500 is default] --model_name=chessbot --model_base_path=[full path to model, without version]
 
 To consume the service from python (prerequisite: `pip install tensorflow-serving-api`):
+    
     from tensorflow_serving.apis import prediction_service_pb2
     from tensorflow_serving.apis import predict_pb2
 
