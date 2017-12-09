@@ -493,12 +493,15 @@ class ChessboardPredictor(object):
     builder.save(asText)
 
 
+
   def getPrediction(self,img):
     """Run trained neural network on tiles generated from image"""
     
     # Convert to grayscale numpy array
     img_arr = np.asarray(img.convert("L"), dtype=np.float32)
+    return getPredictionFromArray(img)
     
+  def getPredictionFromArray(self, img_arr):
     # Use computer vision to get the tiles
     tiles = getTiles(img_arr)
     if tiles is None or len(tiles) == 0:
