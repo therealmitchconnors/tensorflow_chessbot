@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package chessfenbot.service;
+
+message FenRequest {
+    bytes Image = 1;
+    int32 ImageWidth = 2;
+    int32 ImageHeight = 3;
+}
+
+message FenResponse {
+    string FenString = 1;
+    float Score = 2;
+}
+
+service ChessFenService {
+    rpc PredictFen(FenRequest) returns (FenResponse);
+}
