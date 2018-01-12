@@ -44,7 +44,7 @@ import glob
 import argparse
 
 # Imports for computer vision
-import PIL.Image
+# import PIL.Image
 import scipy.signal
 
 import helper_functions
@@ -235,19 +235,20 @@ def getChessTiles(a, lines_x, lines_y):
       # tiles[:,:,(7-j)*8+i] = np.pad(a2[y1:y2, x1:x2],((padl_y,padr_y),(padl_x,padr_x)), mode='edge')
       full_size_tile = np.pad(a2[y1:y2, x1:x2],((padl_y,padr_y),(padl_x,padr_x)), mode='edge')
       tiles[:,:,(7-j)*8+i] = np.asarray( \
-        PIL.Image.fromarray(full_size_tile) \
-        .resize([32,32], PIL.Image.BILINEAR), dtype=np.float32) / 255.0
+          full_size_tile, dtype=np.float32) / 255.0
+#         PIL.Image.fromarray(full_size_tile) \
+#         .resize([32,32], PIL.Image.BILINEAR), dtype=np.float32) / 255.0
         #PIL.Image.ADAPTIVE causes image artifacts
   return tiles
 
 
-def loadImage(img_file):
-  """Load image from file, convert to grayscale float32 numpy array"""
-  img = PIL.Image.open(img_file)
-  img = resizeAsNeeded(img)
+# def loadImage(img_file):
+#   """Load image from file, convert to grayscale float32 numpy array"""
+#   img = PIL.Image.open(img_file)
+#   img = resizeAsNeeded(img)
 
-  # Convert to grayscale and return as an numpy array
-  return np.asarray(img.convert("L"), dtype=np.float32)
+#   # Convert to grayscale and return as an numpy array
+#   return np.asarray(img.convert("L"), dtype=np.float32)
 
 def resizeAsNeeded(img):
   """Resize if image larger than 2k pixels on a side"""
@@ -366,7 +367,8 @@ def generateTileset(input_chessboard_folder, output_tile_folder):
     # Load image
     print("---")
     print("Loading %s..." % img_path)
-    img_arr = loadImage(img_path)
+    img_arr = helper_functions.loadImageFromPath(img_path)
+    #Probably needs grayscaling here...
 
     # Get tiles
     print("\tGenerating tiles for %s..." % img_file)
@@ -498,7 +500,7 @@ class ChessboardPredictor(object):
     """Run trained neural network on tiles generated from image"""
     
     # Convert to grayscale numpy array
-    img_arr = np.asarray(img.convert("L"), dtype=np.float32)
+    img_arr = tf.image.rgb_to_grayscale(img, "grayscale")
     return getPredictionFromArray(img)
     
   def getPredictionFromArray(self, img_arr):
