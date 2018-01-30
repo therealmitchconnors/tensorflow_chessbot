@@ -13,7 +13,8 @@ While solutions like TensorFlow Mobile exist, there is, at this writing, no plug
 ### 2. Most ML projects are implemented in Python, which is not commonly supported in server-side frameworks
 In particluar, I am targeting the lichess mobile app, as it is open source and well supported.  The lichess API back-end is implemented in the Play Framework in Scala, so our Neural Network should be accessible from there, either by library or API call.  The most natural solution here would be to use tensorflow serving to call our model from scala using grpc but...
 
-### 3. The tensorflow_chessbot, like many TF examples, is not implemented in pure tensorflow.  In particular, this application leverages PIL, numpy, cv2, and other libraries for data manipulation which would not be accessible over tensorflow serving.  This logic could, theoretically, be ported to Scala, but it is interweaved with TensorFlow operations in such a way that would represent unacceptable redundancy in back and forth communications between Scala and TensorFlow Serving.
+### 3. Mixed Library Usage
+The tensorflow_chessbot, like many TF examples, is not implemented exclusively tensorflow.  In particular, this application leverages PIL, numpy, cv2, and other libraries for data manipulation which would not be accessible over tensorflow serving.  This logic could, theoretically, be ported to Scala, but it is interweaved with TensorFlow operations in such a way that would represent unacceptable redundancy in back and forth communications between Scala and TensorFlow Serving.
 
 ## Project Plan
 
